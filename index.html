@@ -1,0 +1,996 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Annual Health Checkup Guide — Adults 24+</title>
+<style>
+  *, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
+
+  :root {
+    --bg: #ffffff;
+    --bg-secondary: #f7f6f2;
+    --bg-tertiary: #f0ede6;
+    --text: #1a1a1a;
+    --text-muted: #5a5a5a;
+    --text-hint: #8a8a8a;
+    --border: rgba(0,0,0,0.1);
+    --border-strong: rgba(0,0,0,0.18);
+    --radius-sm: 6px;
+    --radius-md: 10px;
+    --radius-lg: 14px;
+    --teal-bg: #E1F5EE; --teal-text: #085041;
+    --amber-bg: #FAEEDA; --amber-text: #633806;
+    --coral-bg: #FAECE7; --coral-text: #712B13;
+    --blue-bg: #E6F1FB; --blue-text: #0C447C;
+    --purple-bg: #EEEDFE; --purple-text: #3C3489;
+  }
+
+  @media (prefers-color-scheme: dark) {
+    :root {
+      --bg: #1c1c1e;
+      --bg-secondary: #2c2c2e;
+      --bg-tertiary: #3a3a3c;
+      --text: #f0f0f0;
+      --text-muted: #aeaeb2;
+      --text-hint: #6e6e73;
+      --border: rgba(255,255,255,0.1);
+      --border-strong: rgba(255,255,255,0.2);
+      --teal-bg: #085041; --teal-text: #9FE1CB;
+      --amber-bg: #633806; --amber-text: #FAC775;
+      --coral-bg: #712B13; --coral-text: #F5C4B3;
+      --blue-bg: #0C447C; --blue-text: #B5D4F4;
+      --purple-bg: #3C3489; --purple-text: #CECBF6;
+    }
+  }
+
+  body {
+    font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', sans-serif;
+    background: var(--bg-secondary);
+    color: var(--text);
+    font-size: 15px;
+    line-height: 1.6;
+    min-height: 100vh;
+  }
+
+  header {
+    background: var(--bg);
+    border-bottom: 0.5px solid var(--border);
+    padding: 1.5rem 1.25rem 1.25rem;
+    text-align: center;
+  }
+  header h1 { font-size: clamp(18px, 4vw, 26px); font-weight: 600; color: var(--text); }
+  header p { font-size: 13px; color: var(--text-muted); margin-top: 4px; }
+
+  .container { max-width: 1100px; margin: 0 auto; padding: 1.25rem; }
+
+  .controls {
+    background: var(--bg);
+    border-radius: var(--radius-lg);
+    border: 0.5px solid var(--border);
+    padding: 1rem 1.25rem;
+    margin-bottom: 1.25rem;
+    display: flex;
+    flex-wrap: wrap;
+    gap: 1rem;
+    align-items: flex-end;
+  }
+  .control-group { display: flex; flex-direction: column; gap: 6px; min-width: 140px; }
+  .control-group label { font-size: 11px; font-weight: 500; color: var(--text-hint); text-transform: uppercase; letter-spacing: 0.05em; }
+  .pill-row { display: flex; flex-wrap: wrap; gap: 6px; }
+  .pill {
+    padding: 5px 13px;
+    border-radius: 20px;
+    border: 0.5px solid var(--border-strong);
+    background: transparent;
+    color: var(--text-muted);
+    font-size: 12px;
+    cursor: pointer;
+    transition: all 0.15s;
+    white-space: nowrap;
+  }
+  .pill:hover { background: var(--bg-secondary); }
+  .pill.active { background: var(--text); color: var(--bg); border-color: var(--text); }
+
+  .summary-row {
+    display: grid;
+    grid-template-columns: repeat(auto-fit, minmax(120px, 1fr));
+    gap: 10px;
+    margin-bottom: 1.25rem;
+  }
+  .stat-card {
+    background: var(--bg);
+    border-radius: var(--radius-md);
+    padding: 0.9rem 1rem;
+    border: 0.5px solid var(--border);
+    text-align: center;
+  }
+  .stat-card .num { font-size: 26px; font-weight: 600; line-height: 1.1; }
+  .stat-card .lbl { font-size: 11px; color: var(--text-muted); margin-top: 3px; }
+
+  .results-count { font-size: 12px; color: var(--text-hint); margin-bottom: 8px; padding-left: 2px; }
+
+  .card-grid {
+    display: grid;
+    grid-template-columns: repeat(auto-fill, minmax(320px, 1fr));
+    gap: 12px;
+  }
+
+  .test-card {
+    background: var(--bg);
+    border-radius: var(--radius-lg);
+    border: 0.5px solid var(--border);
+    padding: 1rem 1.25rem;
+    display: flex;
+    flex-direction: column;
+    gap: 10px;
+  }
+  .test-card.hidden { display: none; }
+
+  .card-header { display: flex; align-items: flex-start; justify-content: space-between; gap: 8px; }
+  .card-title { font-size: 14px; font-weight: 600; color: var(--text); line-height: 1.3; }
+  .card-subtitle { font-size: 11px; color: var(--text-hint); margin-top: 2px; }
+
+  .badge {
+    display: inline-block;
+    padding: 3px 9px;
+    border-radius: 12px;
+    font-size: 11px;
+    font-weight: 500;
+    white-space: nowrap;
+    flex-shrink: 0;
+  }
+  .b-mandatory { background: var(--teal-bg); color: var(--teal-text); }
+  .b-optional  { background: var(--amber-bg); color: var(--amber-text); }
+  .b-conditional { background: var(--coral-bg); color: var(--coral-text); }
+
+  .card-why { font-size: 13px; color: var(--text-muted); line-height: 1.55; }
+
+  .card-meta { display: flex; flex-wrap: wrap; gap: 8px; }
+  .meta-chip {
+    font-size: 11px;
+    padding: 3px 8px;
+    border-radius: 6px;
+    background: var(--bg-secondary);
+    color: var(--text-muted);
+    border: 0.5px solid var(--border);
+  }
+  .meta-chip.green { background: var(--teal-bg); color: var(--teal-text); }
+  .meta-chip.red   { background: var(--coral-bg); color: var(--coral-text); }
+
+  .age-tags { display: flex; flex-wrap: wrap; gap: 5px; }
+  .age-tag {
+    font-size: 10px;
+    padding: 2px 7px;
+    border-radius: 5px;
+    background: var(--purple-bg);
+    color: var(--purple-text);
+    font-weight: 500;
+  }
+
+  .section-label { font-size: 11px; font-weight: 500; color: var(--text-hint); text-transform: uppercase; letter-spacing: 0.05em; }
+
+  .divider { height: 0.5px; background: var(--border); }
+
+  .disclaimer {
+    margin-top: 2rem;
+    background: var(--bg);
+    border-radius: var(--radius-lg);
+    border: 0.5px solid var(--border);
+    border-left: 3px solid #D85A30;
+    padding: 1rem 1.25rem;
+  }
+  .disclaimer h3 { font-size: 13px; font-weight: 600; color: var(--coral-text); margin-bottom: 8px; }
+  .disclaimer p { font-size: 12px; color: var(--text-muted); line-height: 1.65; margin-bottom: 6px; }
+  .disclaimer p:last-child { margin-bottom: 0; }
+
+  footer {
+    text-align: center;
+    font-size: 11px;
+    color: var(--text-hint);
+    padding: 2rem 1rem;
+  }
+  footer a { color: var(--text-muted); text-decoration: none; }
+  footer a:hover { text-decoration: underline; }
+
+  .no-results {
+    text-align: center;
+    padding: 3rem 1rem;
+    color: var(--text-hint);
+    font-size: 14px;
+    display: none;
+  }
+
+  .view-toggle-row {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    flex-wrap: wrap;
+    gap: 10px;
+    margin-bottom: 10px;
+  }
+  .view-btn {
+    display: inline-flex;
+    align-items: center;
+    gap: 6px;
+    padding: 6px 14px;
+    border-radius: 8px;
+    border: 0.5px solid var(--border-strong);
+    background: transparent;
+    color: var(--text-muted);
+    font-size: 12px;
+    cursor: pointer;
+    transition: all 0.15s;
+  }
+  .view-btn:hover { background: var(--bg-secondary); }
+  .view-btn.active { background: var(--text); color: var(--bg); border-color: var(--text); }
+  .view-btn svg { width: 13px; height: 13px; flex-shrink: 0; }
+
+  .table-toolbar {
+    background: var(--bg);
+    border-radius: var(--radius-lg);
+    border: 0.5px solid var(--border);
+    padding: 1rem 1.25rem;
+    margin-bottom: 1rem;
+  }
+  .table-toolbar-top {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    flex-wrap: wrap;
+    gap: 10px;
+    margin-bottom: 10px;
+  }
+  .table-toolbar-top p { font-size: 12px; color: var(--text-muted); }
+  .select-actions { display: flex; gap: 8px; flex-wrap: wrap; }
+  .sel-btn {
+    padding: 4px 11px;
+    border-radius: 6px;
+    border: 0.5px solid var(--border-strong);
+    background: transparent;
+    color: var(--text-muted);
+    font-size: 11px;
+    cursor: pointer;
+  }
+  .sel-btn:hover { background: var(--bg-secondary); }
+  .check-list {
+    display: grid;
+    grid-template-columns: repeat(auto-fill, minmax(260px, 1fr));
+    gap: 6px;
+    max-height: 260px;
+    overflow-y: auto;
+    padding-right: 4px;
+  }
+  .check-item {
+    display: flex;
+    align-items: center;
+    gap: 8px;
+    padding: 5px 8px;
+    border-radius: 6px;
+    cursor: pointer;
+    border: 0.5px solid transparent;
+    transition: background 0.1s;
+  }
+  .check-item:hover { background: var(--bg-secondary); }
+  .check-item input[type="checkbox"] { accent-color: var(--text); width: 14px; height: 14px; flex-shrink: 0; cursor: pointer; }
+  .check-item-label { font-size: 12px; color: var(--text); line-height: 1.3; cursor: pointer; }
+  .check-item-sub { font-size: 10px; color: var(--text-hint); }
+  .generate-btn {
+    margin-top: 12px;
+    width: 100%;
+    padding: 9px;
+    border-radius: 8px;
+    border: 0.5px solid var(--border-strong);
+    background: var(--text);
+    color: var(--bg);
+    font-size: 13px;
+    font-weight: 500;
+    cursor: pointer;
+    transition: opacity 0.15s;
+  }
+  .generate-btn:hover { opacity: 0.85; }
+
+  .table-view-wrap {
+    background: var(--bg);
+    border-radius: var(--radius-lg);
+    border: 0.5px solid var(--border);
+    overflow-x: auto;
+  }
+  .table-view-wrap table {
+    width: 100%;
+    border-collapse: collapse;
+    font-size: 13px;
+  }
+  .table-view-wrap th {
+    font-size: 10px;
+    font-weight: 500;
+    color: var(--text-hint);
+    text-transform: uppercase;
+    letter-spacing: 0.05em;
+    padding: 10px 14px;
+    border-bottom: 0.5px solid var(--border);
+    text-align: left;
+    white-space: nowrap;
+    background: var(--bg-secondary);
+  }
+  .table-view-wrap td {
+    padding: 10px 14px;
+    border-bottom: 0.5px solid var(--border);
+    vertical-align: middle;
+    color: var(--text);
+  }
+  .table-view-wrap tr:last-child td { border-bottom: none; }
+  .table-view-wrap tr:hover td { background: var(--bg-secondary); }
+  .sno { color: var(--text-hint); font-size: 11px; width: 36px; }
+  .tname { font-weight: 500; }
+  .taka { font-size: 11px; color: var(--text-hint); }
+  .print-btn {
+    display: inline-flex;
+    align-items: center;
+    gap: 5px;
+    padding: 5px 12px;
+    border-radius: 6px;
+    border: 0.5px solid var(--border-strong);
+    background: transparent;
+    color: var(--text-muted);
+    font-size: 11px;
+    cursor: pointer;
+  }
+  .print-btn:hover { background: var(--bg-secondary); }
+
+  @media print {
+    header, .controls, .summary-row, .results-count, .view-toggle-row, .table-toolbar, .disclaimer, footer, .print-btn { display: none !important; }
+    .table-view-wrap { border: none; }
+    body { background: #fff; }
+  }
+
+  @media (max-width: 600px) {
+    .card-grid { grid-template-columns: 1fr; }
+    .controls { flex-direction: column; gap: 0.85rem; }
+    header { padding: 1.25rem 1rem 1rem; }
+    .check-list { grid-template-columns: 1fr; }
+  }
+</style>
+</head>
+<body>
+
+<header>
+  <h1>Annual Health Checkup Guide</h1>
+  <p>Evidence-based reference for adults in India · Age-wise recommendations from 24+ · Updated 2025</p>
+</header>
+
+<div class="container">
+
+  <div class="controls">
+    <div class="control-group">
+      <label>Priority</label>
+      <div class="pill-row" id="priority-filters">
+        <button class="pill active" data-filter="priority" data-value="all">All</button>
+        <button class="pill" data-filter="priority" data-value="mandatory">Mandatory</button>
+        <button class="pill" data-filter="priority" data-value="optional">Optional</button>
+        <button class="pill" data-filter="priority" data-value="conditional">Conditional</button>
+      </div>
+    </div>
+    <div class="control-group">
+      <label>Age group</label>
+      <div class="pill-row" id="age-filters">
+        <button class="pill active" data-filter="age" data-value="all">All ages</button>
+        <button class="pill" data-filter="age" data-value="20s">24–29</button>
+        <button class="pill" data-filter="age" data-value="30s">30–39</button>
+        <button class="pill" data-filter="age" data-value="40s">40–49</button>
+        <button class="pill" data-filter="age" data-value="50s">50–59</button>
+        <button class="pill" data-filter="age" data-value="60plus">60+</button>
+      </div>
+    </div>
+    <div class="control-group">
+      <label>In standard package?</label>
+      <div class="pill-row" id="included-filters">
+        <button class="pill active" data-filter="included" data-value="all">All</button>
+        <button class="pill" data-filter="included" data-value="yes">Included</button>
+        <button class="pill" data-filter="included" data-value="no">Add separately</button>
+      </div>
+    </div>
+  </div>
+
+  <div class="summary-row">
+    <div class="stat-card">
+      <div class="num" id="count-total">—</div>
+      <div class="lbl">tests shown</div>
+    </div>
+    <div class="stat-card">
+      <div class="num" style="color: var(--teal-text);" id="count-mandatory">—</div>
+      <div class="lbl">mandatory</div>
+    </div>
+    <div class="stat-card">
+      <div class="num" style="color: var(--amber-text);" id="count-optional">—</div>
+      <div class="lbl">optional</div>
+    </div>
+    <div class="stat-card">
+      <div class="num" style="color: var(--coral-text);" id="count-conditional">—</div>
+      <div class="lbl">conditional</div>
+    </div>
+  </div>
+
+  <div class="view-toggle-row">
+    <p class="results-count" id="results-count"></p>
+    <div style="display:flex;gap:8px;">
+      <button class="view-btn active" id="btn-card-view" onclick="switchView('card')">
+        <svg viewBox="0 0 16 16" fill="none" stroke="currentColor" stroke-width="1.5" style="width:13px;height:13px;flex-shrink:0;"><rect x="1" y="1" width="6" height="6" rx="1"/><rect x="9" y="1" width="6" height="6" rx="1"/><rect x="1" y="9" width="6" height="6" rx="1"/><rect x="9" y="9" width="6" height="6" rx="1"/></svg>
+        Card view
+      </button>
+      <button class="view-btn" id="btn-table-view" onclick="switchView('table')">
+        <svg viewBox="0 0 16 16" fill="none" stroke="currentColor" stroke-width="1.5" style="width:13px;height:13px;flex-shrink:0;"><rect x="1" y="1" width="14" height="14" rx="1"/><line x1="1" y1="5" x2="15" y2="5"/><line x1="1" y1="9" x2="15" y2="9"/><line x1="5" y1="1" x2="5" y2="15"/></svg>
+        Table view
+      </button>
+    </div>
+  </div>
+
+  <div id="card-view-section">
+    <div class="card-grid" id="card-grid"></div>
+    <div class="no-results" id="no-results">No tests match your current filters.</div>
+  </div>
+
+  <div id="table-view-section" style="display:none;">
+    <div class="table-toolbar">
+      <div class="table-toolbar-top">
+        <p>Select the tests you want in your table, then click generate.</p>
+        <div class="select-actions">
+          <button class="sel-btn" onclick="selectAll()">Select all</button>
+          <button class="sel-btn" onclick="selectNone()">Clear</button>
+          <button class="sel-btn" onclick="selectByPriority('mandatory')">Mandatory only</button>
+          <button class="sel-btn" onclick="selectByPriority('optional')">Optional only</button>
+        </div>
+      </div>
+      <div class="check-list" id="check-list"></div>
+      <button class="generate-btn" onclick="generateTable()">Generate table</button>
+    </div>
+    <div id="table-output" style="display:none;">
+      <div style="display:flex;align-items:center;justify-content:space-between;margin-bottom:8px;flex-wrap:wrap;gap:8px;">
+        <p style="font-size:12px;color:var(--text-hint);" id="table-count-label"></p>
+        <button class="print-btn" onclick="window.print()">
+          <svg width="13" height="13" viewBox="0 0 16 16" fill="none" stroke="currentColor" stroke-width="1.5"><path d="M4 4V1h8v3"/><rect x="1" y="4" width="14" height="8" rx="1"/><path d="M4 8h8M4 12h8"/><rect x="4" y="8" width="8" height="7"/></svg>
+          Print / Save PDF
+        </button>
+      </div>
+      <div class="table-view-wrap">
+        <table id="gen-table">
+          <thead>
+            <tr>
+              <th style="width:36px;">#</th>
+              <th>Test name</th>
+              <th>Also known as</th>
+              <th>Priority</th>
+              <th>Age groups</th>
+              <th>Frequency</th>
+              <th>Fasting</th>
+              <th>In std. package</th>
+            </tr>
+          </thead>
+          <tbody id="gen-tbody"></tbody>
+        </table>
+      </div>
+    </div>
+  </div>
+
+  <div class="disclaimer">
+    <h3>Medical disclaimer</h3>
+    <p>This guide is intended for general informational and educational purposes only. It is not a substitute for professional medical advice, diagnosis, or treatment. Always consult a qualified doctor or healthcare provider before making decisions about your health or the health of your family members.</p>
+    <p>Test recommendations may vary based on individual medical history, symptoms, family history, lifestyle, and the clinical judgment of your physician. The age-wise guidance here reflects common general screening frameworks and may not apply to everyone.</p>
+    <p>Standard health package inclusions vary across diagnostic labs (Apollo, Thyrocare, Metropolis, Dr. Lal Pathlabs, etc.). Always verify with your lab which tests are included in a specific package before booking.</p>
+    <p>This content does not constitute a doctor-patient relationship. If you experience symptoms of any kind, please seek immediate medical attention rather than relying solely on routine screening schedules.</p>
+  </div>
+
+</div>
+
+<footer>
+  <p>Built as a public health reference · Data based on general Indian adult screening guidelines · <a href="https://www.mohfw.gov.in/" target="_blank">MoHFW India</a> · <a href="https://www.icmr.nic.in/" target="_blank">ICMR</a></p>
+  <p style="margin-top:4px;">Not affiliated with any diagnostic lab or medical institution · Open source · Share freely</p>
+</footer>
+
+<script>
+const tests = [
+  {
+    name: "HbA1c (Glycated haemoglobin)",
+    aka: "Blood sugar 3-month average",
+    priority: "mandatory",
+    why: "Best marker for blood sugar control over the past 3 months. Essential for detecting pre-diabetes and diabetes early, before fasting glucose becomes abnormal. Recommended annually for all adults.",
+    who: "Everyone 24+",
+    ages: ["20s","30s","40s","50s","60plus"],
+    frequency: "Yearly",
+    fasting: false,
+    included: true,
+    normalRange: "Below 5.7% (normal) · 5.7–6.4% (pre-diabetes) · 6.5%+ (diabetes)",
+    note: ""
+  },
+  {
+    name: "CBC / CBP (Complete Blood Picture)",
+    aka: "Full blood count",
+    priority: "mandatory",
+    why: "Detects anaemia, infections, platelet disorders, and signs of leukaemia. Iron-deficiency anaemia is extremely common in Indian adults, especially women. One of the most foundational tests.",
+    who: "Everyone 24+",
+    ages: ["20s","30s","40s","50s","60plus"],
+    frequency: "Yearly",
+    fasting: false,
+    included: true,
+    normalRange: "Hb: Men 13.5–17.5 g/dL · Women 12–15.5 g/dL",
+    note: ""
+  },
+  {
+    name: "CMP (Complete Metabolic Panel)",
+    aka: "Kidney + liver + electrolytes + glucose",
+    priority: "mandatory",
+    why: "Screens kidney function (creatinine, BUN), liver enzymes (ALT, AST), blood glucose, calcium, and electrolytes in one draw. Catches early organ damage from diabetes, hypertension, and fatty liver.",
+    who: "Everyone 24+",
+    ages: ["20s","30s","40s","50s","60plus"],
+    frequency: "Yearly",
+    fasting: true,
+    included: true,
+    normalRange: "Multiple markers — values reviewed by doctor",
+    note: "Requires 8–10 hr fasting"
+  },
+  {
+    name: "Lipid profile (HDL, LDL, triglycerides, total cholesterol)",
+    aka: "Heart disease risk panel",
+    priority: "mandatory",
+    why: "Assesses cardiovascular disease risk. HDL (good cholesterol) should be high; LDL and triglycerides should be low. Triglycerides above 150 often signal insulin resistance. Risk rises significantly after 35.",
+    who: "Everyone 24+; more critical from 30 onwards",
+    ages: ["20s","30s","40s","50s","60plus"],
+    frequency: "Yearly",
+    fasting: true,
+    included: true,
+    normalRange: "HDL >40 (men) / >50 (women) mg/dL · LDL <100 mg/dL · Triglycerides <150 mg/dL",
+    note: "Requires 9–12 hr fasting"
+  },
+  {
+    name: "TSH (Thyroid stimulating hormone)",
+    aka: "Thyroid function",
+    priority: "mandatory",
+    why: "Thyroid disorders affect 1 in 10 Indian adults and are especially common in women. Hypothyroidism causes fatigue, weight gain, and depression; hyperthyroidism causes anxiety and rapid heart rate. Both are easily treated once detected.",
+    who: "Everyone 24+; high priority for women",
+    ages: ["20s","30s","40s","50s","60plus"],
+    frequency: "Yearly",
+    fasting: false,
+    included: true,
+    normalRange: "0.4–4.0 mIU/L (varies slightly by lab)",
+    note: "Women should test every 6 months if on medication or planning pregnancy"
+  },
+  {
+    name: "Vitamin D (25-OH vitamin D)",
+    aka: "Sunshine vitamin",
+    priority: "mandatory",
+    why: "Over 70% of urban Indians are deficient regardless of sunlight exposure. Deficiency causes bone loss, muscle weakness, fatigue, low immunity, and is linked to depression. Supplementation is cheap and highly effective.",
+    who: "Everyone 24+; critical for women post-35",
+    ages: ["20s","30s","40s","50s","60plus"],
+    frequency: "Yearly",
+    fasting: false,
+    included: false,
+    normalRange: "30–100 ng/mL (optimal 40–60 ng/mL) · Below 20 = deficient",
+    note: "Not included in most standard packages — add separately (~₹600–900)"
+  },
+  {
+    name: "Ferritin",
+    aka: "Iron storage marker",
+    priority: "mandatory",
+    why: "Ferritin is the most sensitive early indicator of iron deficiency, well before haemoglobin drops. Very commonly low in Indian women due to menstruation and diet. Low ferritin causes hair loss, fatigue, and poor concentration.",
+    who: "Everyone 24+; critical for women and vegetarians",
+    ages: ["20s","30s","40s","50s","60plus"],
+    frequency: "Yearly",
+    fasting: false,
+    included: false,
+    normalRange: "Men: 24–336 ng/mL · Women: 11–307 ng/mL · Below 30 = suboptimal",
+    note: "Add separately — more informative than serum iron alone"
+  },
+  {
+    name: "Urine routine (CUE — Complete Urine Examination)",
+    aka: "Urinalysis",
+    priority: "mandatory",
+    why: "Screens for kidney disease (protein in urine), urinary tract infections, microscopic blood, and early diabetes (glucose in urine). Simple and inexpensive. Abnormal results warrant further investigation.",
+    who: "Everyone 24+",
+    ages: ["20s","30s","40s","50s","60plus"],
+    frequency: "Yearly",
+    fasting: false,
+    included: true,
+    normalRange: "No protein, glucose, RBCs, or WBCs in urine",
+    note: "First-morning midstream sample preferred"
+  },
+  {
+    name: "hsCRP (High-sensitivity C-reactive protein)",
+    aka: "Inflammation marker for heart risk",
+    priority: "optional",
+    why: "Detects low-grade chronic inflammation — a major independent risk factor for heart disease. Particularly useful for people with normal cholesterol levels but other risk factors like stress, obesity, or sedentary lifestyle.",
+    who: "Ages 24+; priority if overweight, smoker, or family history of heart disease",
+    ages: ["20s","30s","40s","50s","60plus"],
+    frequency: "Yearly or every 2 years",
+    fasting: false,
+    included: false,
+    normalRange: "Below 1 mg/L (low risk) · 1–3 mg/L (moderate) · Above 3 mg/L (high risk)",
+    note: "Interpret with lipid profile for complete cardiac risk picture"
+  },
+  {
+    name: "Homocysteine",
+    aka: "Stroke & clot risk marker",
+    priority: "optional",
+    why: "Elevated homocysteine damages blood vessel walls and raises risk of heart attack, stroke, and blood clots. Often caused by B12 or folate deficiency — very common in vegetarians. Treatable with B-complex vitamins.",
+    who: "Ages 40+; family history of heart disease or stroke; vegetarians",
+    ages: ["40s","50s","60plus"],
+    frequency: "Every 2–3 years if normal",
+    fasting: true,
+    included: false,
+    normalRange: "Below 15 µmol/L (optimal below 10 µmol/L)",
+    note: "Fasting sample required · Especially important for vegetarians"
+  },
+  {
+    name: "Fasting insulin / HOMA-IR",
+    aka: "Insulin resistance test",
+    priority: "optional",
+    why: "Detects insulin resistance years before diabetes appears on HbA1c. Elevated fasting insulin drives weight gain, PCOD, fatty liver, and cardiovascular disease. The earliest warning sign of metabolic syndrome.",
+    who: "Ages 24+; overweight, PCOD, family history of diabetes",
+    ages: ["20s","30s","40s","50s","60plus"],
+    frequency: "Every 1–2 years if at risk",
+    fasting: true,
+    included: false,
+    normalRange: "Fasting insulin: 2–20 µIU/mL · HOMA-IR below 2.0 (optimal below 1.5)",
+    note: "Requires overnight fasting · C-peptide is an alternative if insulin measurement is unreliable"
+  },
+  {
+    name: "Magnesium",
+    aka: "Essential mineral",
+    priority: "optional",
+    why: "Magnesium deficiency is very common and underdiagnosed. Affects sleep quality, muscle cramps, heart rhythm, blood pressure regulation, and insulin sensitivity. Indian diets (processed foods, low nuts/seeds) are often low in magnesium.",
+    who: "Ages 35+; anyone with muscle cramps, poor sleep, or hypertension",
+    ages: ["20s","30s","40s","50s","60plus"],
+    frequency: "Every 1–2 years",
+    fasting: false,
+    included: false,
+    normalRange: "1.7–2.2 mg/dL (serum) · Note: serum levels are poor at detecting tissue deficiency",
+    note: "Often bundled with phosphorus in electrolyte panels"
+  },
+  {
+    name: "Phosphorus",
+    aka: "Bone & kidney health mineral",
+    priority: "optional",
+    why: "Works with calcium and vitamin D for bone health. Abnormal phosphorus signals kidney disease or parathyroid issues. Most useful in people with known kidney problems or bone disease.",
+    who: "Ages 40+; kidney disease or bone health concerns",
+    ages: ["40s","50s","60plus"],
+    frequency: "Every 2 years or as part of renal panel",
+    fasting: false,
+    included: false,
+    normalRange: "2.5–4.5 mg/dL",
+    note: "Less critical as a standalone test — more useful in context of CMP"
+  },
+  {
+    name: "DHEA-S (Dehydroepiandrosterone sulphate)",
+    aka: "Adrenal hormone",
+    priority: "conditional",
+    why: "DHEA-S declines with age and is elevated in PCOD. Useful for women with irregular periods, excess hair growth, acne, or fatigue. In men, rarely useful in routine screening. Not recommended universally.",
+    who: "Women with PCOD, hormonal imbalance, or adrenal symptoms",
+    ages: ["20s","30s","40s"],
+    frequency: "As needed based on symptoms",
+    fasting: false,
+    included: false,
+    normalRange: "Women 30–39: 45–270 µg/dL · Declines with age · Men higher",
+    note: "Order alongside LH, FSH, testosterone for complete hormonal picture in women"
+  },
+  {
+    name: "ESR (Erythrocyte Sedimentation Rate)",
+    aka: "Broad inflammation marker",
+    priority: "conditional",
+    why: "Non-specific inflammation marker. Elevated in infections, autoimmune diseases (rheumatoid arthritis, lupus), anaemia, and cancers. Not useful as routine screening — only meaningful when specific symptoms are present.",
+    who: "Only if symptoms: joint pain, persistent fatigue, unexplained fever, suspected autoimmune disease",
+    ages: ["40s","50s","60plus"],
+    frequency: "Only when symptomatic",
+    fasting: false,
+    included: true,
+    normalRange: "Men: below 15 mm/hr · Women: below 20 mm/hr (age-adjusted)",
+    note: "Included in many packages but has low value in asymptomatic individuals"
+  },
+  {
+    name: "GGT (Gamma-glutamyl transferase)",
+    aka: "Liver stress marker",
+    priority: "conditional",
+    why: "Sensitive marker for liver cell damage, especially from fatty liver disease, alcohol, or certain medications. Rises before other liver enzymes. Most useful if CMP shows mildly elevated liver enzymes or fatty liver is suspected on ultrasound.",
+    who: "Ages 35+; overweight, alcohol use, or fatty liver suspected",
+    ages: ["20s","30s","40s","50s","60plus"],
+    frequency: "When liver disease suspected",
+    fasting: false,
+    included: false,
+    normalRange: "Men: 9–48 U/L · Women: 9–36 U/L",
+    note: "Order alongside ALT/AST from CMP for full liver picture"
+  },
+  {
+    name: "Uric acid",
+    aka: "Gout & kidney stone risk",
+    priority: "optional",
+    why: "Elevated uric acid causes gout (painful joint crystals) and kidney stones. Rising uric acid also correlates with metabolic syndrome, hypertension, and fatty liver. Very common in Indian men over 40 due to diet.",
+    who: "Men 40+; anyone with joint pain, kidney stones, or high-protein diet",
+    ages: ["40s","50s","60plus"],
+    frequency: "Yearly after 40",
+    fasting: true,
+    included: true,
+    normalRange: "Men: 3.5–7.2 mg/dL · Women: 2.6–6.0 mg/dL",
+    note: "Often included in standard packages"
+  },
+  {
+    name: "Vitamin B12",
+    aka: "Nerve & brain vitamin",
+    priority: "mandatory",
+    why: "B12 deficiency is extremely common in India, especially among vegetarians and vegans. Deficiency causes irreversible nerve damage, memory problems, fatigue, and anaemia. Easy to supplement but must be caught early.",
+    who: "Everyone 24+; critical for vegetarians, vegans, and people on metformin",
+    ages: ["20s","30s","40s","50s","60plus"],
+    frequency: "Yearly",
+    fasting: false,
+    included: false,
+    normalRange: "200–900 pg/mL (optimal above 400 pg/mL)",
+    note: "Add separately — one of the most important overlooked tests in India"
+  },
+  {
+    name: "Calcium (serum)",
+    aka: "Bone & nerve health",
+    priority: "optional",
+    why: "Low calcium combined with low Vitamin D indicates bone loss risk (osteopenia/osteoporosis). High calcium can signal parathyroid disease. Important for women after 40 to establish a baseline.",
+    who: "Women 40+; anyone with bone density concerns or on Vitamin D supplements",
+    ages: ["40s","50s","60plus"],
+    frequency: "Every 2 years",
+    fasting: false,
+    included: true,
+    normalRange: "8.5–10.5 mg/dL",
+    note: "Usually included in CMP"
+  },
+  {
+    name: "ECG (Electrocardiogram)",
+    aka: "Heart rhythm check",
+    priority: "optional",
+    why: "Non-invasive baseline recording of heart electrical activity. Detects rhythm abnormalities, prior silent heart attacks, and conduction defects. Becomes more important after 40 and is a must for anyone with hypertension, diabetes, or chest symptoms.",
+    who: "Ages 40+; mandatory with hypertension, diabetes, or family history of heart disease",
+    ages: ["40s","50s","60plus"],
+    frequency: "Yearly after 45",
+    fasting: false,
+    included: false,
+    normalRange: "Interpreted by doctor — normal sinus rhythm expected",
+    note: "Quick 5-minute test; available at all clinics"
+  },
+  {
+    name: "Bone density (DEXA scan)",
+    aka: "Osteoporosis screening",
+    priority: "conditional",
+    why: "Osteoporosis is largely silent until a fracture occurs. Women lose bone density rapidly after menopause. DEXA scan is the gold standard for measuring bone mineral density and is recommended for all women over 50.",
+    who: "Women 50+; men 60+; anyone with low Vitamin D or early menopause",
+    ages: ["50s","60plus"],
+    frequency: "Every 2–3 years",
+    fasting: false,
+    included: false,
+    normalRange: "T-score above -1.0 (normal) · -1 to -2.5 (osteopenia) · Below -2.5 (osteoporosis)",
+    note: "Not a blood test — imaging scan, usually available at major hospitals"
+  },
+  {
+    name: "PSA (Prostate-specific antigen)",
+    aka: "Prostate cancer marker",
+    priority: "conditional",
+    why: "Screening for prostate cancer and benign prostate enlargement in men. Risk increases significantly after 50. Early detection allows curative treatment. Recommended for all men from 50, or from 45 if family history exists.",
+    who: "Men 50+; men 45+ with family history of prostate cancer",
+    ages: ["50s","60plus"],
+    frequency: "Yearly after 50",
+    fasting: false,
+    included: false,
+    normalRange: "Below 4 ng/mL (age-adjusted interpretation by doctor)",
+    note: "Men only · Discuss with doctor before testing — results require careful interpretation"
+  },
+  {
+    name: "Pap smear / HPV co-test",
+    aka: "Cervical cancer screening",
+    priority: "conditional",
+    why: "Cervical cancer is the second most common cancer in Indian women. Pap smear every 3 years (or HPV co-test every 5 years) from age 24 can detect pre-cancerous changes early when treatment is simple and effective.",
+    who: "Women 24–65 years, sexually active",
+    ages: ["20s","30s","40s","50s","60plus"],
+    frequency: "Every 3 years (Pap alone) or every 5 years (with HPV test)",
+    fasting: false,
+    included: false,
+    normalRange: "Normal/negative result expected",
+    note: "Women only · Done at gynaecology clinic, not standard blood lab"
+  },
+  {
+    name: "Mammogram",
+    aka: "Breast cancer screening",
+    priority: "conditional",
+    why: "Breast cancer is the most common cancer in Indian women. Mammography detects tumours 2–3 years before they can be felt. Screening from age 40 (or earlier with family history) significantly reduces mortality.",
+    who: "Women 40+; earlier if family history of breast cancer",
+    ages: ["40s","50s","60plus"],
+    frequency: "Every 1–2 years",
+    fasting: false,
+    included: false,
+    normalRange: "BI-RADS score interpreted by radiologist",
+    note: "Women only · Imaging test — available at radiology centres"
+  },
+  {
+    name: "Blood pressure measurement",
+    aka: "Hypertension check",
+    priority: "mandatory",
+    why: "Hypertension (high blood pressure) is often completely asymptomatic — the 'silent killer'. It is a leading cause of heart attacks, strokes, and kidney failure. Simple and free to check, yet one of the highest impact screenings available.",
+    who: "Everyone 18+; critical from 24 onwards",
+    ages: ["20s","30s","40s","50s","60plus"],
+    frequency: "At every doctor visit; at least twice yearly",
+    fasting: false,
+    included: true,
+    normalRange: "Below 120/80 mmHg (normal) · 130/80+ (stage 1 hypertension)",
+    note: "Can be done at any pharmacy or clinic — no lab required"
+  }
+];
+
+let activeFilters = { priority: 'all', age: 'all', included: 'all' };
+
+function priorityBadge(p) {
+  const map = { mandatory: 'b-mandatory', optional: 'b-optional', conditional: 'b-conditional' };
+  const label = p.charAt(0).toUpperCase() + p.slice(1);
+  return `<span class="badge ${map[p]}">${label}</span>`;
+}
+
+function renderCards() {
+  const grid = document.getElementById('card-grid');
+  const noRes = document.getElementById('no-results');
+  const cards = grid.querySelectorAll('.test-card');
+  let visible = 0, mandatory = 0, optional = 0, conditional = 0;
+
+  cards.forEach(card => {
+    const p = card.dataset.priority;
+    const ages = card.dataset.ages.split(',');
+    const inc = card.dataset.included;
+
+    const okP = activeFilters.priority === 'all' || p === activeFilters.priority;
+    const okA = activeFilters.age === 'all' || ages.includes(activeFilters.age);
+    const okI = activeFilters.included === 'all' || inc === activeFilters.included;
+
+    if (okP && okA && okI) {
+      card.classList.remove('hidden');
+      visible++;
+      if (p === 'mandatory') mandatory++;
+      else if (p === 'optional') optional++;
+      else conditional++;
+    } else {
+      card.classList.add('hidden');
+    }
+  });
+
+  document.getElementById('count-total').textContent = visible;
+  document.getElementById('count-mandatory').textContent = mandatory;
+  document.getElementById('count-optional').textContent = optional;
+  document.getElementById('count-conditional').textContent = conditional;
+  document.getElementById('results-count').textContent = `Showing ${visible} of ${tests.length} tests`;
+  noRes.style.display = visible === 0 ? 'block' : 'none';
+}
+
+function buildCards() {
+  const grid = document.getElementById('card-grid');
+  grid.innerHTML = '';
+  tests.forEach(t => {
+    const ageTags = t.ages.map(a => {
+      const labels = { '20s': '24–29', '30s': '30–39', '40s': '40–49', '50s': '50–59', '60plus': '60+' };
+      return `<span class="age-tag">${labels[a]}</span>`;
+    }).join('');
+
+    const incChip = t.included
+      ? `<span class="meta-chip green">In standard package</span>`
+      : `<span class="meta-chip red">Add separately</span>`;
+
+    const fastChip = t.fasting
+      ? `<span class="meta-chip">Fasting required</span>`
+      : '';
+
+    const freqChip = `<span class="meta-chip">${t.frequency}</span>`;
+
+    const noteHtml = t.note ? `<p style="font-size:11px;color:var(--text-hint);margin-top:4px;">${t.note}</p>` : '';
+
+    const card = document.createElement('div');
+    card.className = 'test-card';
+    card.dataset.priority = t.priority;
+    card.dataset.ages = t.ages.join(',');
+    card.dataset.included = t.included ? 'yes' : 'no';
+
+    card.innerHTML = `
+      <div class="card-header">
+        <div>
+          <div class="card-title">${t.name}</div>
+          <div class="card-subtitle">${t.aka}</div>
+        </div>
+        ${priorityBadge(t.priority)}
+      </div>
+      <div class="divider"></div>
+      <p class="card-why">${t.why}</p>
+      <div>
+        <div class="section-label" style="margin-bottom:5px;">Normal range</div>
+        <p style="font-size:12px;color:var(--text-muted);">${t.normalRange}</p>
+        ${noteHtml}
+      </div>
+      <div>
+        <div class="section-label" style="margin-bottom:5px;">Recommended age groups</div>
+        <div class="age-tags">${ageTags}</div>
+      </div>
+      <div class="card-meta">${incChip}${fastChip}${freqChip}</div>
+      <div style="font-size:12px;color:var(--text-muted);">${t.who}</div>
+    `;
+    grid.appendChild(card);
+  });
+  renderCards();
+}
+
+document.querySelectorAll('.pill[data-filter]').forEach(btn => {
+  btn.addEventListener('click', () => {
+    const filterType = btn.dataset.filter;
+    const value = btn.dataset.value;
+    activeFilters[filterType] = value;
+    document.querySelectorAll(`.pill[data-filter="${filterType}"]`).forEach(b => b.classList.remove('active'));
+    btn.classList.add('active');
+    renderCards();
+  });
+});
+
+function switchView(v) {
+  const isCard = v === 'card';
+  document.getElementById('card-view-section').style.display = isCard ? '' : 'none';
+  document.getElementById('table-view-section').style.display = isCard ? 'none' : '';
+  document.getElementById('btn-card-view').classList.toggle('active', isCard);
+  document.getElementById('btn-table-view').classList.toggle('active', !isCard);
+  if (!isCard) buildCheckList();
+}
+
+function buildCheckList() {
+  const cl = document.getElementById('check-list');
+  cl.innerHTML = '';
+  const ageLabels = { '20s': '24–29', '30s': '30–39', '40s': '40–49', '50s': '50–59', '60plus': '60+' };
+  tests.forEach((t, i) => {
+    const div = document.createElement('label');
+    div.className = 'check-item';
+    div.innerHTML = `
+      <input type="checkbox" id="chk-${i}" data-index="${i}" data-priority="${t.priority}" checked>
+      <span>
+        <span class="check-item-label">${t.name}</span><br>
+        <span class="check-item-sub">${t.aka}</span>
+      </span>
+    `;
+    cl.appendChild(div);
+  });
+}
+
+function selectAll() {
+  document.querySelectorAll('#check-list input[type="checkbox"]').forEach(c => c.checked = true);
+}
+function selectNone() {
+  document.querySelectorAll('#check-list input[type="checkbox"]').forEach(c => c.checked = false);
+}
+function selectByPriority(p) {
+  document.querySelectorAll('#check-list input[type="checkbox"]').forEach(c => {
+    c.checked = c.dataset.priority === p;
+  });
+}
+
+function generateTable() {
+  const selected = Array.from(document.querySelectorAll('#check-list input[type="checkbox"]:checked'))
+    .map(c => tests[parseInt(c.dataset.index)]);
+  if (selected.length === 0) { alert('Please select at least one test.'); return; }
+
+  const ageLabels = { '20s': '24–29', '30s': '30–39', '40s': '40–49', '50s': '50–59', '60plus': '60+' };
+  const prioMap = { mandatory: 'b-mandatory', optional: 'b-optional', conditional: 'b-conditional' };
+  const tbody = document.getElementById('gen-tbody');
+  tbody.innerHTML = selected.map((t, i) => `
+    <tr>
+      <td style="color:var(--text-hint);font-size:11px;">${i + 1}</td>
+      <td>
+        <div style="font-weight:500;font-size:13px;">${t.name}</div>
+      </td>
+      <td style="font-size:12px;color:var(--text-muted);">${t.aka}</td>
+      <td><span class="badge ${prioMap[t.priority]}" style="font-size:10px;">${t.priority.charAt(0).toUpperCase()+t.priority.slice(1)}</span></td>
+      <td style="font-size:11px;color:var(--text-muted);">${t.ages.map(a => ageLabels[a]).join(', ')}</td>
+      <td style="font-size:12px;color:var(--text-muted);">${t.frequency}</td>
+      <td style="font-size:12px;">${t.fasting ? '<span style="color:var(--amber-text);">Yes</span>' : '<span style="color:var(--text-hint);">No</span>'}</td>
+      <td style="font-size:12px;">${t.included ? '<span style="color:var(--teal-text);">Yes</span>' : '<span style="color:var(--coral-text);">Add separately</span>'}</td>
+    </tr>
+  `).join('');
+
+  document.getElementById('table-count-label').textContent = `${selected.length} test${selected.length > 1 ? 's' : ''} selected`;
+  document.getElementById('table-output').style.display = '';
+  document.getElementById('table-output').scrollIntoView({ behavior: 'smooth', block: 'start' });
+}
+
+buildCards();
+</script>
+</body>
+</html>
