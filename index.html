@@ -5,7 +5,7 @@
     <link rel="icon" href="favicon.ico">
     <meta
       property="og:title"
-      content="Annual Health Checkup Guide — Adults 24+"
+      content="AI Health Checkup Guide"
     />
     <meta
       property="og:description"
@@ -377,34 +377,7 @@
     cursor: pointer;
   }
   .print-btn:hover { background: var(--bg-secondary); }
- 
- 
- 
- 
- 
- 
- 
- 
- 
- 
- 
- 
- 
- 
- 
- 
- 
- 
- 
- 
- 
- 
- 
- 
- 
- 
- 
- 
+
  
   /* ── AI SEARCH ── */
   .ai-search-box {
@@ -541,8 +514,8 @@
 <body>
  
 <header>
-  <h1>Annual Health Checkup Guide</h1>
-  <p>Evidence-based reference for adults in India · Age-wise recommendations from 24+ · Updated 2025</p>
+  <h1>Health Checkup Guide AI</h1>
+  <p>Evidence-based reference for adults in India · Age-wise recommendations from 24+ · Updated 2026 · Ai</p>
 </header>
  
 <div class="container">
@@ -1354,7 +1327,7 @@ async function runAiSearch() {
  
         section.innerHTML = `
           <div class="ai-suggested-label">
-            ${genuinelyNew.length} additional test${genuinelyNew.length > 1 ? 's' : ''} suggested by AI — not in our database
+            ${genuinelyNew.length} additional test${genuinelyNew.length > 1 ? 's' : ''} suggested by AI
           </div>
           <div class="card-grid" style="margin-top:0;">
             ${genuinelyNew.map(t => `
